@@ -7,7 +7,7 @@ output: pdf_document
 
 # Introduction
 
-We are writing a tutorial on analysing the cognitive decline dataset by Drs. Lipton and Hall using a generalized additive mixed models
+This is a tutorial on analysing the cognitive decline dataset by Drs. Lipton and Hall using a generalized additive mixed models inspired and guided by the book \href{http://www.highstat.com/BGGAMM.htm}{A Beginner's Guide to Generalized Additive Mixed Models with R. Zuur AF, Saveliev AA, Ieno EN.}
 
 ```{r knitr, echo=FALSE}
 suppressWarnings(library(knitr))
