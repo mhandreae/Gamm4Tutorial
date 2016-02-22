@@ -1,0 +1,40 @@
+---
+title: "Gamm4Tutorial"
+author: "Michael Andreae"
+date: "February 22, 2016"
+output: pdf_document
+---
+
+# Introduction
+
+We are writing a tutorial on analysing the cognitive decline dataset by Drs. Lipton and Hall using a generalized additive mixed models
+
+```{r knitr, echo=FALSE}
+suppressWarnings(library(knitr))
+```
+
+```{r globle_knitr_options, echo=FALSE}
+rm(list=ls())
+suppressWarnings(library(knitr))
+# set options
+opts_chunk$set(fig.width=6, fig.height=4, fig.path='Figs/',
+               echo=FALSE, warning=FALSE, message=FALSE)
+eval_everything=FALSE
+```
+
+
+```{r library}
+require(knitr)
+library(tidyr)
+library(rstan)
+library(rstanarm)
+library(shinystan)
+require(ggplot2)
+library(parallel)
+library(nlme)
+library(dplyr)
+```
+
+
+
+## Load data
