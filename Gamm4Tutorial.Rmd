@@ -6,7 +6,6 @@ output: pdf_document
 ---
 
 # Introduction
-
 This is a tutorial on analysing the cognitive decline dataset by Drs. Lipton and Hall using a generalized additive mixed models inspired and guided by the book \href{http://www.highstat.com/BGGAMM.htm}{A Beginner's Guide to Generalized Additive Mixed Models with R. Zuur AF, Saveliev AA, Ieno EN.}
 
 ```{r knitr, echo=FALSE}
@@ -17,11 +16,12 @@ suppressWarnings(library(knitr))
 rm(list=ls())
 suppressWarnings(library(knitr))
 # set options
-opts_chunk$set(fig.width=6, fig.height=4, fig.path='Figs/',
+opts_chunk$set(fig.width=6, fig.height=4, 
+               fig.align = "left",
+               fig.path='Figs/',
                echo=FALSE, warning=FALSE, message=FALSE)
 eval_everything=FALSE
 ```
-
 
 ```{r library}
 
@@ -37,8 +37,16 @@ library(mgcv)
 # library(dplyr)
 ```
 
-## Import and load data
+## Sourcing support files
+We source the support files available \href{http://www.highstat.com/BGGAMM.htm#Data_sets_and_R_code_used}{online}
 
+```{r source_support_files}
+source(file = "HighstatLibV6.R") 
+source(file = "MCMCSupportHighstatV2.R")
+source(file = "SupportFilesHighstat.R")
+```
+
+## Import and load squid data
 We import \href{http://www.highstat.com/BGS/GAMM/Data/SquidNorway.txt}{the squid dataset} from the website and save it as *SquidNorway.Rdata*
 
 ```{r import_squid_data, eval=FALSE}
@@ -46,8 +54,7 @@ Squid <- read.table(file= "SquidNorway.txt", header = TRUE, dec = ".")
 save(Squid, file="SquidNorway.Rdata")
 ```
 
-## Load data
-
+## Load SquidNorway data
 We load the *SquidNorway.Rdata* file and fit a linear regression, plot the standardized residuals against the predictor length *ML*
 
 ```{r load_SquidNorway}
@@ -65,9 +72,7 @@ p +xlab("ML") +
 ```
 
 ## Fit GAM
-
 We fit a first generalized additive model using *gam* from the package *mgcv*, using different smoothers and plot the smoothers
-
 ```{r first_GAM}
 M2A <- gam(d15N ~ Lat +s(ML), data=Squid)
 M3A <- gam(d15N ~ Lat +s(ML, bs="cr"), data=Squid)
@@ -80,3 +85,17 @@ plot(M4A)
 plot(M5A)
 ```
 
+## Standardize covariates
+We standardize the covariates to improve mixing for MCMC.
+```{r standardize_covariates}
+# need to source the routines source files included with the book
+Squid$Lat.std<-Mystd(Squid$Lat)
+Squid$ML.std<-Mystd(Squid$ML)
+```
+
+## Second GAM
+We fit a second gam with the standardized residuals and plot the smoother.
+```{r second_GAM}
+M3 <- gam(d15N ~ Lat.std + s(ML.std, bs="cr"), data=Squid)
+plot(M3, residuals = TRUE, , pch=16, cex=0.7)
+```
