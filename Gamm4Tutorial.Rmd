@@ -171,3 +171,4 @@ l +geom_path(data = NewData,
               colour="red") +
   theme_minimal()
 ```
+
