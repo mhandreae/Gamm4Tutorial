@@ -24,17 +24,40 @@ eval_everything=FALSE
 
 
 ```{r library}
-require(knitr)
-library(tidyr)
-library(rstan)
-library(rstanarm)
-library(shinystan)
-require(ggplot2)
-library(parallel)
-library(nlme)
-library(dplyr)
+# require(knitr)
+# library(tidyr)
+# library(rstan)
+# library(rstanarm)
+# library(shinystan)
+library(ggplot2)
+# library(parallel)
+# library(nlme)
+# library(dplyr)
 ```
 
+## Import and load data
 
+We import \href{http://www.highstat.com/BGS/GAMM/Data/SquidNorway.txt}{the squid dataset} from the website and save it as *SquidNorway.Rdata*
+
+```{r import_squid_data, eval=FALSE}
+Squid <- read.table(file= "SquidNorway.txt", header = TRUE, dec = ".")
+save(Squid, file="SquidNorway.Rdata")
+```
 
 ## Load data
+
+We load the *SquidNorway.Rdata* file and fit a linear regression, plot the standardized residuals against the predictor length *ML*
+
+```{r load_SquidNorway}
+load("SquidNorway.Rdata")
+str(Squid)
+M1 <- lm(d15N ~ Lat +ML, data=Squid)
+Squid$E1 <- rstandard(M1)
+
+p <- ggplot(Squid, aes(ML, E1)) +
+  geom_point() +
+  geom_smooth()
+p +xlab("ML") +
+  ylab("standardized residuals") +theme_minimal() +
+  geom_hline(yintercept = 0)
+```
