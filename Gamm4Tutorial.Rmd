@@ -8,6 +8,7 @@ output: pdf_document
 # Introduction
 This is a tutorial on analysing the cognitive decline dataset by Drs. Lipton and Hall using a generalized additive mixed models inspired and guided by the book \href{http://www.highstat.com/BGGAMM.htm}{A Beginner's Guide to Generalized Additive Mixed Models with R. Zuur AF, Saveliev AA, Ieno EN.}
 
+## Setting up
 ```{r knitr, echo=FALSE}
 suppressWarnings(library(knitr))
 ```
@@ -27,6 +28,7 @@ eval_everything=FALSE
 
 library(ggplot2)
 library(mgcv)
+library(lattice)
 # library(parallel)
 # require(knitr)
 # library(tidyr)
@@ -46,6 +48,7 @@ source(file = "MCMCSupportHighstatV2.R")
 source(file = "SupportFilesHighstat.R")
 ```
 
+# Import and explore Data
 ## Import and load squid data
 We import \href{http://www.highstat.com/BGS/GAMM/Data/SquidNorway.txt}{the squid dataset} from the website and save it as *SquidNorway.Rdata*
 
@@ -55,11 +58,41 @@ save(Squid, file="SquidNorway.Rdata")
 ```
 
 ## Load SquidNorway data
-We load the *SquidNorway.Rdata* file and fit a linear regression, plot the standardized residuals against the predictor length *ML*
-
+We load the *SquidNorway.Rdata* file.
 ```{r load_SquidNorway}
 load("SquidNorway.Rdata")
 str(Squid)
+```
+
+## Explore squid data
+We plot the outcome *d15N* radioisotope versus the predictors.
+```{r exploreSquiddata}
+Y    <- Squid$d15N
+MyX  <- c("Lat", "Depth", "ML")
+X    <- Squid[, MyX]
+
+AllX  <- as.vector(as.matrix(Squid[,MyX]))
+AllY  <- rep(Squid[,"d15N"] , length(MyX))
+AllID <- rep(MyX, each = nrow(Squid))
+    
+xyplot(AllY ~ AllX|factor(AllID), col = 1,layout=c(3,1),
+              xlab = list(label="Explanatory variables",cex = 1.5),
+              ylab = list(label = "d15N", cex = 1.5),
+              strip = function(bg='white', ...)
+                strip.default(bg='white', ...),
+              scales = list(alternating = T,
+                            x = list(relation = "free"),
+                            y = list(relation = "same")),
+              panel=function(x, y){
+                panel.grid(h=-1, v= 2)
+                panel.points(x, y, col = 1)
+                panel.loess(x, y, col = 1, lwd = 2)})
+```
+
+# Modeling
+## Linear Model
+We fit a linear regression, plot the standardized residuals against the predictor length *ML*
+```{r linearSquidModel}
 M1 <- lm(d15N ~ Lat +ML, data=Squid)
 Squid$E1 <- rstandard(M1)
 
@@ -98,4 +131,5 @@ We fit a second gam with the standardized residuals and plot the smoother.
 ```{r second_GAM}
 M3 <- gam(d15N ~ Lat.std + s(ML.std, bs="cr"), data=Squid)
 plot(M3, residuals = TRUE, , pch=16, cex=0.7)
+summary(M3)
 ```
