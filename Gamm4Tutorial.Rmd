@@ -133,3 +133,41 @@ M3 <- gam(d15N ~ Lat.std + s(ML.std, bs="cr"), data=Squid)
 plot(M3, residuals = TRUE, , pch=16, cex=0.7)
 summary(M3)
 ```
+
+# Linear spline regression
+## Linear spline function
+```{r linear_spline_function, echo=TRUE}
+rhs <- function(x, TH) ifelse(x >= TH, x-TH, 0)
+```
+
+## Linear spline model
+We fit a model with a linear spline with one knot.
+```{r linear_spline_model}
+M4 <- gam(d15N ~ Lat.std +ML.std +rhs(ML.std, 0.8), data=Squid)
+summary(M4)
+```
+
+## Ploting the linear spline
+We plot the predicted line by first predicting on a new dataset holding $Lat.std = 0$
+```{r plotting_linear_spline_singlenot}
+NewData<- data.frame(ML.std = seq(from = -1.48, to = 3.03, 
+                                  length = 100),
+                     Lat.std=0)
+P4 <- predict(M4, newdata = NewData)
+
+## using build in plot
+# plot(x=Squid$ML.std,y=Squid$d15N, pch=16, xlab="standardized ML",
+#     ylab="d15N")
+# abline(v=0.83, lty=2, lwd=2)
+# lines(x=NewData$ML.std, y=P4, lwd=5)
+
+## ggplot
+l <- ggplot(Squid) +geom_point(aes(x=ML.std, y=d15N)) +
+  geom_vline(xintercept = 0.83, 
+               colour="green", linetype = "longdash")
+
+l +geom_path(data = NewData, 
+             aes(x=ML.std, y=P4),
+              colour="red") +
+  theme_minimal()
+```
