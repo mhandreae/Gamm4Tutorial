@@ -50,10 +50,17 @@ source(file = "SupportFilesHighstat.R")
 
 # Import and explore Data
 ## Import and load squid data
-We import \href{http://www.highstat.com/BGS/GAMM/Data/SquidNorway.txt}{the squid dataset} from the website and save it as *SquidNorway.Rdata*
+We import \href{http://www.highstat.com/BGS/GAMM/Data/SquidNorway.txt}{the polar bear dataset} from the website and save it as *PolarBearsV2.Rdata* after we factorize certain variables
 
 ```{r import_polar_bear_data, eval=FALSE}
 PB <- read.table(file= "PolarBearsV2.txt", header = TRUE, dec = ".")
+
+PB$fBearID <-factor(PB$BearID)
+PB$fRepro <-factor(PB$Repro)
+PB$fDen <-factor(PB$Den)
+PB$fMonth <-factor(PB$Month)
+PB$fSeason <-factor(PB$Season)
+
 save(PB, file="PolarBearsV2.Rdata")
 ```
 
@@ -62,4 +69,51 @@ We load the *PolarBearsV2.Rdata* file.
 ```{r load_polarbear}
 load("PolarBearsV2.Rdata")
 str(PB)
+```
+
+# Exploration
+## Cleveland dotplot
+```{r Cleveland_plot}
+c <- ggplot(PB, aes(x=Movement, y=1:nrow(PB)))
+c +geom_point()
+```
+
+## Changes in movement over time
+```{r changes_movement_time}
+ch <- ggplot(PB, aes(x=dDay, y=Movement))
+ch +geom_point() +stat_smooth() +theme_minimal()
+```
+
+## Boxplot for seasonality
+Investigating the amount of movement in different months.
+```{r boxplot_season}
+b <- ggplot(PB, aes(fMonth, Movement))
+b + geom_boxplot()
+```
+
+# Model
+## Centering
+```{r centering_polarbear}
+PB$Yearc <- PB$Year-mean(PB$Year)
+PB$DayInYearc <- PB$DayInYear - mean(PB$DayInYear)
+```
+
+## Frequentist approach
+
+### Model
+```{r frequentist_model}
+M1 <- gamm(Movement ~ fRepro +Yearc +s(DayInYearc), data=PB,
+           random = list(BearID=~ 1))
+```
+
+### Results
+```{r frequentist_results}
+summary(M1$gam)
+anova(M1$gam)
+summary(M1$lme)
+```
+
+### Smoother plot
+```{r frequentist_smoother}
+plot(M1$gam, cex.lab = 1.5, axes=FALSE, xlab="Day of the year")
 ```
