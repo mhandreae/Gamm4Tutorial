@@ -148,8 +148,8 @@ summary(M4)
 ```
 
 ## Ploting the linear spline
-We plot the predicted line by first predicting on a new dataset holding $Lat.std = 0$
-```{r plotting_linear_spline_singlenot}
+We visualize the predicted line by predicting on a new dataset holding $Lat.std = 0$ and plotting this as a red line.
+```{r plotting_linear_spline_singleKnot}
 NewData<- data.frame(ML.std = seq(from = -1.48, to = 3.03, 
                                   length = 100),
                      Lat.std=0)
