@@ -1,0 +1,65 @@
+---
+title: "Gamm4Tutorial"
+author: "Michael Andreae"
+date: "February 22, 2016"
+output: pdf_document
+---
+
+# Introduction second chapter
+This is the second chapter of our tutorial on analysing the cognitive decline dataset by Drs. Lipton and Hall using a generalized additive mixed models inspired and guided by the book \href{http://www.highstat.com/BGGAMM.htm}{A Beginner's Guide to Generalized Additive Mixed Models with R. Zuur AF, Saveliev AA, Ieno EN.}
+
+## Setting up
+```{r knitr, echo=FALSE}
+suppressWarnings(library(knitr))
+```
+
+```{r globle_knitr_options, echo=FALSE}
+rm(list=ls())
+suppressWarnings(library(knitr))
+# set options
+opts_chunk$set(fig.width=6, fig.height=4, 
+               fig.align = "left",
+               fig.path='Figs/',
+               echo=FALSE, warning=FALSE, message=FALSE)
+eval_everything=FALSE
+```
+
+```{r library}
+
+library(ggplot2)
+library(mgcv)
+library(lattice)
+# library(parallel)
+# require(knitr)
+# library(tidyr)
+# library(rstan)
+# library(rstanarm)
+# library(shinystan)
+# library(nlme)
+# library(dplyr)
+```
+
+## Sourcing support files
+We source the support files available \href{http://www.highstat.com/BGGAMM.htm#Data_sets_and_R_code_used}{online}
+
+```{r source_support_files}
+source(file = "HighstatLibV6.R") 
+source(file = "MCMCSupportHighstatV2.R")
+source(file = "SupportFilesHighstat.R")
+```
+
+# Import and explore Data
+## Import and load squid data
+We import \href{http://www.highstat.com/BGS/GAMM/Data/SquidNorway.txt}{the squid dataset} from the website and save it as *SquidNorway.Rdata*
+
+```{r import_polar_bear_data, eval=FALSE}
+PB <- read.table(file= "PolarBearsV2.txt", header = TRUE, dec = ".")
+save(PB, file="PolarBearsV2.Rdata")
+```
+
+## Load polar bear data
+We load the *PolarBearsV2.Rdata* file.
+```{r load_polarbear}
+load("PolarBearsV2.Rdata")
+str(PB)
+```
