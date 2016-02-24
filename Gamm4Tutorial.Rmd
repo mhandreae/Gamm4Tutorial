@@ -24,13 +24,15 @@ eval_everything=FALSE
 
 
 ```{r library}
+
+library(ggplot2)
+library(mgcv)
+# library(parallel)
 # require(knitr)
 # library(tidyr)
 # library(rstan)
 # library(rstanarm)
 # library(shinystan)
-library(ggplot2)
-# library(parallel)
 # library(nlme)
 # library(dplyr)
 ```
@@ -61,3 +63,20 @@ p +xlab("ML") +
   ylab("standardized residuals") +theme_minimal() +
   geom_hline(yintercept = 0)
 ```
+
+## Fit GAM
+
+We fit a first generalized additive model using *gam* from the package *mgcv*, using different smoothers and plot the smoothers
+
+```{r first_GAM}
+M2A <- gam(d15N ~ Lat +s(ML), data=Squid)
+M3A <- gam(d15N ~ Lat +s(ML, bs="cr"), data=Squid)
+M4A <- gam(d15N ~ Lat +s(ML, bs ="ps"), data=Squid)
+M5A <- gam(d15N ~ Lat +s(ML, bs="cs"), data=Squid)
+
+plot(M2A)
+plot(M3A)
+plot(M4A)
+plot(M5A)
+```
+
